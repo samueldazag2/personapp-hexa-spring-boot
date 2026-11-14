@@ -72,6 +72,6 @@ Para otra conexión se pueden definir las variables `P2_MARIA_URL`, `P2_MARIA_US
 
 ## Límites de otras responsabilidades
 
-Persona 3: la entrada actual implementa Persona; faltan endpoints, DTOs y menús para Profession, Study y Phone. MenuPrincipal muestra avisos de implementación en esas tres opciones. No se modifican esos archivos.
+La CLI permite CRUD para Persona, Profesión, Teléfono y Estudio; cada módulo elige MariaDB o MongoDB y las relaciones de Teléfono/Estudio se buscan en el mismo motor seleccionado. La API REST aún expone solo las operaciones documentadas para Persona; el CRUD REST de las cuatro entidades y la documentación Swagger correspondiente siguen pendientes.
 
-Persona 1: los casos de uso de Profession, Study y Phone inyectan MariaDB por defecto; la futura entrada puede seleccionar sus adaptadores Mongo como ya hace Persona. El estado mutable de selección en PersonaInputAdapterRest pertenece a la entrada y puede requerir revisión de concurrencia. PersonOutputAdapterMongo.save conserva el manejo heredado de MongoWriteException; no se amplía aquí su contrato ni se afirma que ese manejo garantice persistencia en caso de error.
+Los casos de uso de Profesión, Estudio y Teléfono inyectan MariaDB por defecto; las entradas seleccionan el adaptador de salida requerido al iniciar cada operación. El estado mutable de selección en PersonaInputAdapterRest pertenece a la entrada y puede requerir revisión de concurrencia. PersonOutputAdapterMongo.save conserva el manejo heredado de MongoWriteException; no se amplía aquí su contrato ni se afirma que ese manejo garantice persistencia en caso de error.

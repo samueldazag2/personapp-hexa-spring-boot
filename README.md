@@ -79,7 +79,7 @@ arrancar con inicialización normal; no requieren activar inicialización perezo
 |---|---|---|
 | 1 — Núcleo y Maven | Puertos y casos de uso de las 4 entidades, pruebas, correcciones del núcleo, CI, `docker-compose` de BD, corrección de la plantilla. | — |
 | 2 — Persistencia y Docker | Adaptadores de las cuatro entidades en MariaDB y MongoDB; mappers, integridad, pruebas reales, Dockerfiles y servicios REST/CLI. | Ver resultados y límites en `docs/persona2/RESULTADOS.md`. |
-| 3 — REST, CLI y Swagger | REST: listar y crear persona (MARIA/MONGO) con validación de datos. CLI: listar personas. | CRUD completo (editar, borrar, buscar, contar) de las 4 entidades en REST y CLI, códigos HTTP adecuados y documentación Swagger. |
+| 3 — REST, CLI y Swagger | CLI: CRUD de Persona, Profesión, Teléfono y Estudio, seleccionando MariaDB o MongoDB por módulo. REST: listar y crear persona (MARIA/MONGO) con validación de datos. | CRUD completo de las 4 entidades en REST, códigos HTTP adecuados y documentación Swagger. |
 
 Probado (2026-11-09): `GET /api/v1/persona/{maria|mongo}` y `POST /api/v1/persona` contra ambas bases,
 y "ver todas las personas" en la CLI con ambos motores.

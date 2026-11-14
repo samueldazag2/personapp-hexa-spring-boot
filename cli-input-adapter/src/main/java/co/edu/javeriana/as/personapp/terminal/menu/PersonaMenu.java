@@ -1,95 +1,96 @@
 package co.edu.javeriana.as.personapp.terminal.menu;
 
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import co.edu.javeriana.as.personapp.common.exceptions.InvalidOptionException;
+import co.edu.javeriana.as.personapp.common.exceptions.NoExistException;
+import co.edu.javeriana.as.personapp.domain.Gender;
+import co.edu.javeriana.as.personapp.domain.Person;
 import co.edu.javeriana.as.personapp.terminal.adapter.PersonaInputAdapterCli;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
-public class PersonaMenu {
+@Component
+public class PersonaMenu extends EntityCrudMenu {
 
-	private static final int OPCION_REGRESAR_MODULOS = 0;
-	private static final int PERSISTENCIA_MARIADB = 1;
-	private static final int PERSISTENCIA_MONGODB = 2;
+	@Autowired
+	private PersonaInputAdapterCli adapter;
 
-	private static final int OPCION_REGRESAR_MOTOR_PERSISTENCIA = 0;
-	private static final int OPCION_VER_TODO = 1;
-	// mas opciones
+	@Override
+	protected String entityName() {
+		return "Personas";
+	}
 
-	public void iniciarMenu(PersonaInputAdapterCli personaInputAdapterCli, Scanner keyboard) {
-		boolean isValid = false;
-		do {
-			try {
-				mostrarMenuMotorPersistencia();
-				int opcion = leerOpcion(keyboard);
-				switch (opcion) {
-				case OPCION_REGRESAR_MODULOS:
-					isValid = true;
-					break;
-				case PERSISTENCIA_MARIADB:
-					personaInputAdapterCli.setPersonOutputPortInjection("MARIA");
-					menuOpciones(personaInputAdapterCli,keyboard);
-					break;
-				case PERSISTENCIA_MONGODB:
-					personaInputAdapterCli.setPersonOutputPortInjection("MONGO");
-					menuOpciones(personaInputAdapterCli,keyboard);
-					break;
-				default:
-					log.warn("La opción elegida no es válida.");
-				}
-			}  catch (InvalidOptionException e) {
-				log.warn(e.getMessage());
+	@Override
+	protected void selectDatabase(String database) throws InvalidOptionException {
+		adapter.setPersonOutputPortInjection(database);
+	}
+
+	@Override
+	protected void create(Scanner keyboard) {
+		Person person = readPerson(keyboard, true);
+		System.out.println("Persona creada: " + adapter.crear(person));
+	}
+
+	@Override
+	protected void edit(Scanner keyboard) throws NoExistException {
+		Integer identification = CliInput.readInteger(keyboard, "Identificación de la persona: ");
+		Person person = readPerson(keyboard, false);
+		System.out.println("Persona actualizada: " + adapter.editar(identification, person));
+	}
+
+	@Override
+	protected void delete(Scanner keyboard) throws NoExistException {
+		Integer identification = CliInput.readInteger(keyboard, "Identificación de la persona: ");
+		System.out.println(adapter.eliminar(identification) ? "Persona eliminada." : "No se pudo eliminar la persona.");
+	}
+
+	@Override
+	protected void find(Scanner keyboard) throws NoExistException {
+		Integer identification = CliInput.readInteger(keyboard, "Identificación de la persona: ");
+		System.out.println(adapter.buscar(identification));
+	}
+
+	@Override
+	protected void list() {
+		adapter.historial();
+	}
+
+	@Override
+	protected void count() {
+		System.out.println("Total de personas: " + adapter.contar());
+	}
+
+	private Person readPerson(Scanner keyboard, boolean includeIdentification) {
+		Integer identification = includeIdentification
+				? CliInput.readInteger(keyboard, "Identificación: ")
+				: null;
+		String firstName = CliInput.read(keyboard, "Nombre: ");
+		String lastName = CliInput.read(keyboard, "Apellido: ");
+		Gender gender = readGender(keyboard);
+		Integer age = CliInput.readOptionalInteger(keyboard, "Edad (opcional): ");
+		Person person = new Person();
+		if (identification != null) {
+			person.setIdentification(identification);
+		}
+		person.setFirstName(firstName);
+		person.setLastName(lastName);
+		person.setGender(gender);
+		person.setAge(age);
+		return person;
+	}
+
+	private Gender readGender(Scanner keyboard) {
+		while (true) {
+			String gender = CliInput.read(keyboard, "Género (M/F): ");
+			if ("M".equalsIgnoreCase(gender) || "MALE".equalsIgnoreCase(gender)) {
+				return Gender.MALE;
 			}
-		} while (!isValid);
-	}
-
-	private void menuOpciones(PersonaInputAdapterCli personaInputAdapterCli, Scanner keyboard) {
-		boolean isValid = false;
-		do {
-			try {
-				mostrarMenuOpciones();
-				int opcion = leerOpcion(keyboard);
-				switch (opcion) {
-				case OPCION_REGRESAR_MOTOR_PERSISTENCIA:
-					isValid = true;
-					break;
-				case OPCION_VER_TODO:
-					personaInputAdapterCli.historial();					
-					break;
-				// mas opciones
-				default:
-					log.warn("La opción elegida no es válida.");
-				}
-			} catch (InputMismatchException e) {
-				log.warn("Solo se permiten números.");
+			if ("F".equalsIgnoreCase(gender) || "FEMALE".equalsIgnoreCase(gender)) {
+				return Gender.FEMALE;
 			}
-		} while (!isValid);
-	}
-
-	private void mostrarMenuOpciones() {
-		System.out.println("----------------------");
-		System.out.println(OPCION_VER_TODO + " para ver todas las personas");
-		// implementar otras opciones
-		System.out.println(OPCION_REGRESAR_MOTOR_PERSISTENCIA + " para regresar");
-	}
-
-	private void mostrarMenuMotorPersistencia() {
-		System.out.println("----------------------");
-		System.out.println(PERSISTENCIA_MARIADB + " para MariaDB");
-		System.out.println(PERSISTENCIA_MONGODB + " para MongoDB");
-		System.out.println(OPCION_REGRESAR_MODULOS + " para regresar");
-	}
-
-	private int leerOpcion(Scanner keyboard) {
-		try {
-			System.out.print("Ingrese una opción: ");
-			return keyboard.nextInt();
-		} catch (InputMismatchException e) {
-			log.warn("Solo se permiten números.");
-			return leerOpcion(keyboard);
+			System.out.println("Ingrese M (masculino) o F (femenino).");
 		}
 	}
-
 }

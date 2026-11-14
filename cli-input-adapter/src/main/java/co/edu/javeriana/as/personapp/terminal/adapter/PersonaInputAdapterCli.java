@@ -8,7 +8,9 @@ import co.edu.javeriana.as.personapp.application.port.out.PersonOutputPort;
 import co.edu.javeriana.as.personapp.application.usecase.PersonUseCase;
 import co.edu.javeriana.as.personapp.common.annotations.Adapter;
 import co.edu.javeriana.as.personapp.common.exceptions.InvalidOptionException;
+import co.edu.javeriana.as.personapp.common.exceptions.NoExistException;
 import co.edu.javeriana.as.personapp.common.setup.DatabaseOption;
+import co.edu.javeriana.as.personapp.domain.Person;
 import co.edu.javeriana.as.personapp.terminal.mapper.PersonaMapperCli;
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,6 +46,26 @@ public class PersonaInputAdapterCli {
 	    personInputPort.findAll().stream()
 	        .map(personaMapperCli::fromDomainToAdapterCli)
 	        .forEach(System.out::println);
+	}
+
+	public Person crear(Person person) {
+		return personInputPort.create(person);
+	}
+
+	public Person editar(Integer identification, Person person) throws NoExistException {
+		return personInputPort.edit(identification, person);
+	}
+
+	public Boolean eliminar(Integer identification) throws NoExistException {
+		return personInputPort.drop(identification);
+	}
+
+	public Person buscar(Integer identification) throws NoExistException {
+		return personInputPort.findOne(identification);
+	}
+
+	public Integer contar() {
+		return personInputPort.count();
 	}
 
 }
