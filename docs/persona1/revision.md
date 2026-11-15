@@ -1,5 +1,7 @@
 # Revisión del núcleo (Persona 1) — common, domain, application y Maven
 
+> **Actualización (revisión final, 2026-11-15):** este documento registra el estado de su etapa. El estado final del laboratorio está en el [README](../../README.md) y en [docs/revision-final.md](../revision-final.md).
+
 Revisión hecha sobre `main` (commit `b9bc9c8`) antes de editar. Línea base: `mvn clean install`
 compila completo con JDK 17.0.20 (target Java 11).
 

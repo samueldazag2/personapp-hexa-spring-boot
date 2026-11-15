@@ -75,7 +75,11 @@ los demás, así que cualquier cambio se acuerda en el grupo primero.
   Teléfono `String number`, Estudio `(Integer professionId, Integer personId)` en ese orden.
 - **Nombres de beans** (`@Adapter("...")`): `personOutputAdapterMaria/Mongo`,
   `professionOutputAdapterMaria/Mongo`, `studyOutputAdapterMaria/Mongo`, `phoneOutputAdapterMaria/Mongo`.
-- **Excepción** de "no existe": `NoExistException` de `common`.
+- **Excepciones** de `common`: `NoExistException` (no existe → HTTP 404), `InvalidOptionException`
+  (base inválida → 400) y `AlreadyExistsException` (la llave ya existe → 409). Los datos inválidos se
+  reportan con `IllegalArgumentException` (→ 400). El `RestExceptionHandler` hace la traducción.
+- **REST**: `POST /api/v1/{entidad}` (base en el body) y `GET|PUT|DELETE /api/v1/{entidad}/{database}/...`;
+  el controlador solo llama a su `*InputAdapterRest`, que crea el caso de uso de la base pedida.
 - **Dominio** (`domain`): no se cambian clases ni el enum `Gender` (MALE, FEMALE, OTHER).
 - **Mappers de salida**: al convertir la persona o la profesión relacionada desde `EstudiosMapper` o
   `TelefonoMapper`, usar siempre `fromDomainToAdapterShallow` / `fromAdapterToDomainShallow`
@@ -88,7 +92,7 @@ Detalle completo de los contratos: [docs/persona1/README.md](docs/persona1/READM
 - [ ] `git pull origin main` hecho y conflictos resueltos.
 - [ ] `mvn clean install` desde la raíz: BUILD SUCCESS.
 - [ ] Todas las pruebas pasan, y agregaste pruebas para lo nuevo.
-- [ ] Probado contra MARIA y contra MONGO con `docker compose up -d`.
+- [ ] Probado contra MARIA y contra MONGO con `docker compose up -d --build` (ver `docs/pruebas-funcionales.md`).
 - [ ] Sin código muerto, sin `System.out` de depuración y sin TODOs nuevos.
 - [ ] Documentaste lo nuevo (README, `docs/`).
 - [ ] No tocaste módulos de otra persona sin avisar.
