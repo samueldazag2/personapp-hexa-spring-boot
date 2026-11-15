@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import co.edu.javeriana.as.personapp.application.port.out.PhoneOutputPort;
+import co.edu.javeriana.as.personapp.common.exceptions.AlreadyExistsException;
 import co.edu.javeriana.as.personapp.common.exceptions.NoExistException;
 import co.edu.javeriana.as.personapp.domain.Gender;
 import co.edu.javeriana.as.personapp.domain.Person;
@@ -39,6 +40,14 @@ class PhoneUseCaseTest {
 	void setUp() {
 		phoneUseCase = new PhoneUseCase(phonePersintence);
 		phone = new Phone(NUMBER, "Claro", new Person(123, "Ana", "Perez", Gender.FEMALE));
+	}
+
+	@Test
+	void createRejectsExistingPhone() {
+		when(phonePersintence.findById(NUMBER)).thenReturn(phone);
+
+		assertThrows(AlreadyExistsException.class, () -> phoneUseCase.create(phone));
+		verify(phonePersintence, never()).save(any());
 	}
 
 	@Test

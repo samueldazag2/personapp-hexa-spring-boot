@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import co.edu.javeriana.as.personapp.application.port.out.ProfessionOutputPort;
+import co.edu.javeriana.as.personapp.common.exceptions.AlreadyExistsException;
 import co.edu.javeriana.as.personapp.common.exceptions.NoExistException;
 import co.edu.javeriana.as.personapp.domain.Profession;
 
@@ -35,6 +36,14 @@ class ProfessionUseCaseTest {
 	void setUp() {
 		professionUseCase = new ProfessionUseCase(professionPersintence);
 		profession = new Profession(1, "Ingeniero");
+	}
+
+	@Test
+	void createRejectsExistingProfession() {
+		when(professionPersintence.findById(1)).thenReturn(profession);
+
+		assertThrows(AlreadyExistsException.class, () -> professionUseCase.create(profession));
+		verify(professionPersintence, never()).save(any());
 	}
 
 	@Test
