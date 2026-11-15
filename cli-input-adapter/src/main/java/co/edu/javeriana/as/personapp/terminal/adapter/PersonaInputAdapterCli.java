@@ -1,5 +1,7 @@
 package co.edu.javeriana.as.personapp.terminal.adapter;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -11,6 +13,8 @@ import co.edu.javeriana.as.personapp.common.exceptions.InvalidOptionException;
 import co.edu.javeriana.as.personapp.common.exceptions.NoExistException;
 import co.edu.javeriana.as.personapp.common.setup.DatabaseOption;
 import co.edu.javeriana.as.personapp.domain.Person;
+import co.edu.javeriana.as.personapp.domain.Phone;
+import co.edu.javeriana.as.personapp.domain.Study;
 import co.edu.javeriana.as.personapp.terminal.mapper.PersonaMapperCli;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,13 +36,9 @@ public class PersonaInputAdapterCli {
 	PersonInputPort personInputPort;
 
 	public void setPersonOutputPortInjection(String dbOption) throws InvalidOptionException {
-		if (dbOption.equalsIgnoreCase(DatabaseOption.MARIA.toString())) {
-			personInputPort = new PersonUseCase(personOutputPortMaria);
-		} else if (dbOption.equalsIgnoreCase(DatabaseOption.MONGO.toString())) {
-			personInputPort = new PersonUseCase(personOutputPortMongo);
-		} else {
-			throw new InvalidOptionException("Invalid database option: " + dbOption);
-		}
+		personInputPort = new PersonUseCase(DatabaseOption.fromString(dbOption) == DatabaseOption.MARIA
+				? personOutputPortMaria
+				: personOutputPortMongo);
 	}
 
 	public void historial() {
@@ -66,6 +66,14 @@ public class PersonaInputAdapterCli {
 
 	public Integer contar() {
 		return personInputPort.count();
+	}
+
+	public List<Phone> verTelefonos(Integer identification) throws NoExistException {
+		return personInputPort.getPhones(identification);
+	}
+
+	public List<Study> verEstudios(Integer identification) throws NoExistException {
+		return personInputPort.getStudies(identification);
 	}
 
 }

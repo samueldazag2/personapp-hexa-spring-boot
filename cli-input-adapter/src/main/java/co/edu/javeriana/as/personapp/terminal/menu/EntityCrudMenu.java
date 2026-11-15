@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 import org.springframework.dao.DataAccessException;
 
+import co.edu.javeriana.as.personapp.common.exceptions.AlreadyExistsException;
 import co.edu.javeriana.as.personapp.common.exceptions.InvalidOptionException;
 import co.edu.javeriana.as.personapp.common.exceptions.NoExistException;
 
@@ -33,6 +34,15 @@ abstract class EntityCrudMenu {
 	protected abstract void list();
 
 	protected abstract void count();
+
+	/** Opciones adicionales de una entidad (por ejemplo, getPhones y getStudies en Persona). */
+	protected void printExtraOptions() {
+	}
+
+	/** @return {@code true} si la opción adicional fue atendida. */
+	protected boolean handleExtraOption(int option, Scanner keyboard) throws NoExistException {
+		return false;
+	}
 
 	public final void iniciarMenu(Scanner keyboard) {
 		while (true) {
@@ -70,6 +80,7 @@ abstract class EntityCrudMenu {
 			System.out.println(FIND + " para buscar por identificador");
 			System.out.println(LIST + " para listar todos");
 			System.out.println(COUNT + " para contar");
+			printExtraOptions();
 			System.out.println(RETURN + " para regresar");
 			int option = CliInput.readInteger(keyboard, "Ingrese una opción: ");
 			if (option == RETURN) {
@@ -96,9 +107,10 @@ abstract class EntityCrudMenu {
 					count();
 					break;
 				default:
-					System.out.println("La opción elegida no es válida.");
+					if (!handleExtraOption(option, keyboard))
+						System.out.println("La opción elegida no es válida.");
 				}
-			} catch (NoExistException | DataAccessException | IllegalArgumentException e) {
+			} catch (NoExistException | AlreadyExistsException | DataAccessException | IllegalArgumentException e) {
 				System.out.println("No se pudo completar la operación: " + e.getMessage());
 			}
 		}
