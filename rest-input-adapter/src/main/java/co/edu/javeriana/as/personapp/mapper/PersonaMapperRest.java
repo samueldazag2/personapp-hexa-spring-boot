@@ -1,6 +1,13 @@
 package co.edu.javeriana.as.personapp.mapper;
 
+import static co.edu.javeriana.as.personapp.mapper.MapperRestUtils.databaseName;
+import static co.edu.javeriana.as.personapp.mapper.MapperRestUtils.optionalInteger;
+import static co.edu.javeriana.as.personapp.mapper.MapperRestUtils.required;
+import static co.edu.javeriana.as.personapp.mapper.MapperRestUtils.requiredInteger;
+import static co.edu.javeriana.as.personapp.mapper.MapperRestUtils.text;
+
 import co.edu.javeriana.as.personapp.common.annotations.Mapper;
+import co.edu.javeriana.as.personapp.common.setup.DatabaseOption;
 import co.edu.javeriana.as.personapp.domain.Gender;
 import co.edu.javeriana.as.personapp.domain.Person;
 import co.edu.javeriana.as.personapp.model.request.PersonaRequest;
@@ -8,54 +15,40 @@ import co.edu.javeriana.as.personapp.model.response.PersonaResponse;
 
 @Mapper
 public class PersonaMapperRest {
-	
+
 	public PersonaResponse fromDomainToAdapterRestMaria(Person person) {
-		return fromDomainToAdapterRest(person, "MariaDB");
+		return fromDomainToAdapterRest(person, DatabaseOption.MARIA);
 	}
+
 	public PersonaResponse fromDomainToAdapterRestMongo(Person person) {
-		return fromDomainToAdapterRest(person, "MongoDB");
+		return fromDomainToAdapterRest(person, DatabaseOption.MONGO);
 	}
-	
-	public PersonaResponse fromDomainToAdapterRest(Person person, String database) {
+
+	public PersonaResponse fromDomainToAdapterRest(Person person, DatabaseOption database) {
 		return new PersonaResponse(
-				person.getIdentification()+"", 
-				person.getFirstName(), 
-				person.getLastName(), 
-				person.getAge() != null ? person.getAge().toString() : "", 
-				person.getGender().toString(), 
-				database,
+				text(person.getIdentification()),
+				person.getFirstName(),
+				person.getLastName(),
+				text(person.getAge()),
+				text(person.getGender()),
+				databaseName(database),
 				"OK");
 	}
 
 	public Person fromAdapterToDomain(PersonaRequest request) {
 		Person person = new Person();
-		person.setIdentification(validateIdentification(request.getDni()));
-		person.setFirstName(validateRequired(request.getFirstName(), "firstName"));
-		person.setLastName(validateRequired(request.getLastName(), "lastName"));
+		person.setIdentification(requiredInteger(request.getDni(), "dni"));
+		person.setFirstName(required(request.getFirstName(), "firstName"));
+		person.setLastName(required(request.getLastName(), "lastName"));
 		person.setAge(validateAge(request.getAge()));
 		person.setGender(validateGender(request.getSex()));
 		return person;
 	}
 
-	private Integer validateIdentification(String dni) {
-		return parseInteger(validateRequired(dni, "dni"), "dni");
-	}
-
 	private Integer validateAge(String age) {
-		return age == null || age.isBlank() ? null : parseInteger(age, "age");
-	}
-
-	private Integer parseInteger(String value, String field) {
-		try {
-			return Integer.valueOf(value.trim());
-		} catch (NumberFormatException e) {
-			throw new IllegalArgumentException(field + " must be a number: " + value);
-		}
-	}
-
-	private String validateRequired(String value, String field) {
-		if (value == null || value.isBlank())
-			throw new IllegalArgumentException(field + " is required");
+		Integer value = optionalInteger(age, "age");
+		if (value != null && value < 0)
+			throw new IllegalArgumentException("age must be greater than or equal to 0: " + age);
 		return value;
 	}
 
@@ -66,5 +59,5 @@ public class PersonaMapperRest {
 			return Gender.FEMALE;
 		throw new IllegalArgumentException("sex must be M or F: " + sex);
 	}
-		
+
 }

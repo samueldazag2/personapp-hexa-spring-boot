@@ -1,12 +1,12 @@
 package co.edu.javeriana.as.personapp.mariadb.adapter;
 
 import java.util.List;
-
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import co.edu.javeriana.as.personapp.application.port.out.PersonOutputPort;
 import co.edu.javeriana.as.personapp.common.annotations.Adapter;
@@ -37,6 +37,11 @@ public class PersonOutputAdapterMaria implements PersonOutputPort {
 	@Override
 	public Boolean delete(Integer identification) {
 		log.debug("Into delete on Adapter MariaDB");
+		personaRepositoryMaria.findById(identification).ifPresent(persona -> {
+			if (!isEmpty(persona.getTelefonos()) || !isEmpty(persona.getEstudios()))
+				throw new DataIntegrityViolationException(
+						"The person with id " + identification + " has phones or studies, cannot be dropped");
+		});
 		personaRepositoryMaria.deleteById(identification);
 		return personaRepositoryMaria.findById(identification).isEmpty();
 	}
@@ -51,11 +56,12 @@ public class PersonOutputAdapterMaria implements PersonOutputPort {
 	@Override
 	public Person findById(Integer identification) {
 		log.debug("Into findById on Adapter MariaDB");
-		if (personaRepositoryMaria.findById(identification).isEmpty()) {
-			return null;
-		} else {
-			return personaMapperMaria.fromAdapterToDomain(personaRepositoryMaria.findById(identification).get());
-		}
+		return personaRepositoryMaria.findById(identification).map(personaMapperMaria::fromAdapterToDomain)
+				.orElse(null);
+	}
+
+	private boolean isEmpty(List<?> list) {
+		return list == null || list.isEmpty();
 	}
 
 }

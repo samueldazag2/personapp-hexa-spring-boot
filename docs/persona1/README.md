@@ -1,5 +1,7 @@
 # Persona 1 — Núcleo (common, domain, application) y Maven
 
+> **Actualización (revisión final, 2026-11-15):** este documento registra el estado de su etapa. El estado final del laboratorio está en el [README](../../README.md) y en [docs/revision-final.md](../revision-final.md).
+
 Rama: `persona1-nucleo`. Laboratorio 2 de Arquitectura de Software: PersonAPP en arquitectura
 hexagonal con Repository y Service (JDK 11, Spring Boot 2.7, MariaDB, MongoDB, REST, CLI, Swagger 3).
 

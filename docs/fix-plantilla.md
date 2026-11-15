@@ -1,5 +1,7 @@
 # Corrección de la plantilla (rama `fix-plantilla`)
 
+> **Actualización (revisión final, 2026-11-15):** los dos pendientes de este documento quedaron resueltos (ver [revision-final.md](revision-final.md)); los errores de REST ahora responden 400/404/409.
+
 Errores que ya traía la plantilla del profesor y cómo se corrigieron. Solo se corrigió lo existente:
 no se crearon adaptadores, endpoints, menús ni casos de uso nuevos, y no se cambiaron los contratos de
 `application` ni el dominio.

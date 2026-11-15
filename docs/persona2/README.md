@@ -72,6 +72,10 @@ Para otra conexión se pueden definir las variables `P2_MARIA_URL`, `P2_MARIA_US
 
 ## Límites de otras responsabilidades
 
-La CLI permite CRUD para Persona, Profesión, Teléfono y Estudio; cada módulo elige MariaDB o MongoDB y las relaciones de Teléfono/Estudio se buscan en el mismo motor seleccionado. La API REST aún expone solo las operaciones documentadas para Persona; el CRUD REST de las cuatro entidades y la documentación Swagger correspondiente siguen pendientes.
+La CLI permite CRUD para Persona, Profesión, Teléfono y Estudio; cada módulo elige MariaDB o MongoDB y las relaciones de Teléfono/Estudio se buscan en el mismo motor seleccionado.
 
-Los casos de uso de Profesión, Estudio y Teléfono inyectan MariaDB por defecto; las entradas seleccionan el adaptador de salida requerido al iniciar cada operación. El estado mutable de selección en PersonaInputAdapterRest pertenece a la entrada y puede requerir revisión de concurrencia. PersonOutputAdapterMongo.save conserva el manejo heredado de MongoWriteException; no se amplía aquí su contrato ni se afirma que ese manejo garantice persistencia en caso de error.
+> **Actualización (revisión final, 2026-11-15):** la API REST ya expone las 6 funciones de las 4 entidades (más getPhones/getStudies) con Swagger; ver el README raíz y `docs/revision-final.md`.
+
+Los casos de uso de Profesión, Estudio y Teléfono inyectan MariaDB por defecto; las entradas seleccionan el adaptador de salida requerido al iniciar cada operación. 
+
+> **Actualización (revisión final, 2026-11-15):** los adaptadores REST ya no guardan el caso de uso en un campo (se crea por petición) y `PersonOutputAdapterMongo.save` ya no atrapa `MongoWriteException` (los errores se propagan).

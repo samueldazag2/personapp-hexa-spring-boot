@@ -1,5 +1,7 @@
 # Resultados y entrega de Persona 2
 
+> **Actualización (revisión final, 2026-11-15):** este documento registra el estado de su etapa. El estado final del laboratorio está en el [README](../../README.md) y en [docs/revision-final.md](../revision-final.md).
+
 Fecha: 11 de noviembre de 2026 (America/Bogota). Rama encontrada y conservada: persona2-persistencia-docker. No se hicieron commits, pushes, cambios de rama ni cambios persistentes de configuración Git. Para inspeccionar se usó safe.directory solo como opción temporal del comando, porque la cuenta sandbox tiene un propietario distinto.
 
 ## Estado inicial preservado

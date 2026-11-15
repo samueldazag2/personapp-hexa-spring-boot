@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import co.edu.javeriana.as.personapp.application.port.out.PersonOutputPort;
+import co.edu.javeriana.as.personapp.common.exceptions.AlreadyExistsException;
 import co.edu.javeriana.as.personapp.common.exceptions.NoExistException;
 import co.edu.javeriana.as.personapp.domain.Gender;
 import co.edu.javeriana.as.personapp.domain.Person;
@@ -39,6 +40,14 @@ class PersonUseCaseTest {
 	void setUp() {
 		personUseCase = new PersonUseCase(personPersintence);
 		person = new Person(123, "Ana", "Perez", Gender.FEMALE);
+	}
+
+	@Test
+	void createRejectsExistingPerson() {
+		when(personPersintence.findById(123)).thenReturn(person);
+
+		assertThrows(AlreadyExistsException.class, () -> personUseCase.create(person));
+		verify(personPersintence, never()).save(any());
 	}
 
 	@Test

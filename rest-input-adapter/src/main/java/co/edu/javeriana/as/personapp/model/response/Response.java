@@ -4,12 +4,18 @@ import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Resultado de la función drop")
 public class Response {
-	
+
+	@Schema(example = "OK")
 	private String status;
+	@Schema(example = "persona 123456789 eliminada de MariaDB")
 	private String description;
-	
+
 	@JsonFormat(pattern = "dd/MM/yyyy")
+	@Schema(type = "string", example = "15/11/2026")
 	private LocalDateTime date;
 
 	public Response(String status, String description, LocalDateTime date) {
@@ -42,7 +48,5 @@ public class Response {
 	public void setDate(LocalDateTime date) {
 		this.date = date;
 	}
-	
-	
 
 }

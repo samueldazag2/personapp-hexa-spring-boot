@@ -28,7 +28,8 @@ public class ProfessionOutputAdapterMongo implements ProfessionOutputPort {
     @Override
     public Boolean delete(Integer identification) {
         if (studies.existsByProfessionId(identification)) {
-            throw new org.springframework.dao.DataIntegrityViolationException("Profesion con estudios asociados");
+            throw new org.springframework.dao.DataIntegrityViolationException(
+                "The profession with id " + identification + " has studies, cannot be dropped");
         }
         repository.deleteById(identification);
         return !repository.existsById(identification);

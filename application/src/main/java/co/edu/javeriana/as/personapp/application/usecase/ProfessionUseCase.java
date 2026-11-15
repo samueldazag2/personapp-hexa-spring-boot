@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import co.edu.javeriana.as.personapp.application.port.in.ProfessionInputPort;
 import co.edu.javeriana.as.personapp.application.port.out.ProfessionOutputPort;
 import co.edu.javeriana.as.personapp.common.annotations.UseCase;
+import co.edu.javeriana.as.personapp.common.exceptions.AlreadyExistsException;
 import co.edu.javeriana.as.personapp.common.exceptions.NoExistException;
 import co.edu.javeriana.as.personapp.domain.Profession;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,8 @@ public class ProfessionUseCase implements ProfessionInputPort {
 	@Override
 	public Profession create(Profession profession) {
 		log.debug("Into create on Application Domain");
+		if (professionPersintence.findById(profession.getIdentification()) != null)
+			throw new AlreadyExistsException("The profession with id " + profession.getIdentification() + " already exists into db, cannot be created");
 		return professionPersintence.save(profession);
 	}
 

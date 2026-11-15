@@ -30,6 +30,11 @@ public class ProfessionOutputAdapterMaria implements ProfessionOutputPort {
 
     @Override
     public Boolean delete(Integer identification) {
+        repository.findById(identification).ifPresent(profesion -> {
+            if (profesion.getEstudios() != null && !profesion.getEstudios().isEmpty())
+                throw new org.springframework.dao.DataIntegrityViolationException(
+                    "The profession with id " + identification + " has studies, cannot be dropped");
+        });
         repository.deleteById(identification);
         return !repository.existsById(identification);
     }

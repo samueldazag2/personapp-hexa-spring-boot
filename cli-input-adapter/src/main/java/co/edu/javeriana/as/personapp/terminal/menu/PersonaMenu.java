@@ -1,5 +1,6 @@
 package co.edu.javeriana.as.personapp.terminal.menu;
 
+import java.util.List;
 import java.util.Scanner;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,10 +10,15 @@ import co.edu.javeriana.as.personapp.common.exceptions.InvalidOptionException;
 import co.edu.javeriana.as.personapp.common.exceptions.NoExistException;
 import co.edu.javeriana.as.personapp.domain.Gender;
 import co.edu.javeriana.as.personapp.domain.Person;
+import co.edu.javeriana.as.personapp.domain.Phone;
+import co.edu.javeriana.as.personapp.domain.Study;
 import co.edu.javeriana.as.personapp.terminal.adapter.PersonaInputAdapterCli;
 
 @Component
 public class PersonaMenu extends EntityCrudMenu {
+
+	private static final int PHONES = 7;
+	private static final int STUDIES = 8;
 
 	@Autowired
 	private PersonaInputAdapterCli adapter;
@@ -60,6 +66,31 @@ public class PersonaMenu extends EntityCrudMenu {
 	@Override
 	protected void count() {
 		System.out.println("Total de personas: " + adapter.contar());
+	}
+
+	@Override
+	protected void printExtraOptions() {
+		System.out.println(PHONES + " para ver los teléfonos de una persona");
+		System.out.println(STUDIES + " para ver los estudios de una persona");
+	}
+
+	@Override
+	protected boolean handleExtraOption(int option, Scanner keyboard) throws NoExistException {
+		if (option == PHONES) {
+			Integer identification = CliInput.readInteger(keyboard, "Identificación de la persona: ");
+			List<Phone> phones = adapter.verTelefonos(identification);
+			System.out.println("Teléfonos de la persona " + identification + ": " + phones.size());
+			phones.forEach(System.out::println);
+			return true;
+		}
+		if (option == STUDIES) {
+			Integer identification = CliInput.readInteger(keyboard, "Identificación de la persona: ");
+			List<Study> studies = adapter.verEstudios(identification);
+			System.out.println("Estudios de la persona " + identification + ": " + studies.size());
+			studies.forEach(System.out::println);
+			return true;
+		}
+		return false;
 	}
 
 	private Person readPerson(Scanner keyboard, boolean includeIdentification) {

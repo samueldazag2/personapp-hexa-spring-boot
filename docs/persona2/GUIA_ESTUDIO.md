@@ -87,6 +87,8 @@ La conversión de fecha SQL se encuentra en [validateGraduationDate](../../maria
 
 [PersonaInputAdapterRest.setPersonOutputPortInjection](../../rest-input-adapter/src/main/java/co/edu/javeriana/as/personapp/adapter/PersonaInputAdapterRest.java#L40) (línea 40) crea PersonUseCase con el bean Maria o Mongo según la opción recibida. [ProfessionUseCase constructor](../../application/src/main/java/co/edu/javeriana/as/personapp/application/usecase/ProfessionUseCase.java#L20) (línea 20) y los constructores equivalentes de StudyUseCase y PhoneUseCase inyectan Maria por defecto. Los adaptadores Mongo están listos para que Persona 3 los conecte; esa selección no fue modificada.
 
+> **Actualización (revisión final, 2026-11-15):** en REST el método `setPersonOutputPortInjection` se reemplazó por `personInputPort(DatabaseOption)`, que crea el caso de uso por petición en los 4 adaptadores `*InputAdapterRest`.
+
 ## Docker Compose
 
 Compose declara servicios, red, volúmenes y condiciones de arranque. Su red predeterminada proporciona DNS por nombre de servicio: desde REST, mariadb:3306 y mongodb:27017 apuntan a las bases; localhost apuntaría a REST mismo. Desde el host se usan MariaDB:3307 y MongoDB:27017.
