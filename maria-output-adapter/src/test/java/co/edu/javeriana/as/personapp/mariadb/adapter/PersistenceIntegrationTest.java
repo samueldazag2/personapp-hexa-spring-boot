@@ -26,7 +26,7 @@ class PersistenceIntegrationTest {
     @EnableAutoConfiguration
     @ComponentScan(basePackages = {"co.edu.javeriana.as.personapp.mariadb.adapter", "co.edu.javeriana.as.personapp.mariadb.mapper"})
     @org.springframework.data.jpa.repository.config.EnableJpaRepositories("co.edu.javeriana.as.personapp.mariadb.repository")
-    @org.springframework.boot.autoconfigure.domain.EntityScan("co.edu.javeriana.as.personapp.mariadb.entity")
+    @org.springframework.boot.persistence.autoconfigure.EntityScan("co.edu.javeriana.as.personapp.mariadb.entity")
     static class Config {}
 
     @Autowired ProfessionOutputAdapterMaria professions;

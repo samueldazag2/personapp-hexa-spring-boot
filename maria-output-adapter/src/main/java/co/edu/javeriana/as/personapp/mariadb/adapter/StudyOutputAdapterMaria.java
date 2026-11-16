@@ -14,7 +14,7 @@ import co.edu.javeriana.as.personapp.mariadb.entity.EstudiosEntity;
 import co.edu.javeriana.as.personapp.mariadb.entity.EstudiosEntityPK;
 
 @Adapter("studyOutputAdapterMaria")
-@javax.transaction.Transactional
+@jakarta.transaction.Transactional
 public class StudyOutputAdapterMaria implements StudyOutputPort {
     @Autowired
     private EstudiosRepositoryMaria repository;

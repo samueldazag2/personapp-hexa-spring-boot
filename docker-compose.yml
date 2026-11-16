@@ -1,7 +1,7 @@
 # Bases de datos y aplicaciones de PersonAPP.
 # Credenciales y puertos iguales a los application.properties de rest-input-adapter y cli-input-adapter.
 # Los scripts de /scripts se ejecutan solo la primera vez (volumen vacío), en orden DDL -> DML.
-# Para reinicializar: docker compose down -v && docker compose up -d
+# Los vol?menes conservan datos; no eliminarlos para actualizar aplicaciones.
 # REST inicia por defecto; CLI se ejecuta con docker compose run --rm cli.
 
 services:
@@ -24,7 +24,7 @@ services:
       start_period: 30s
 
   mongodb:
-    image: mongo:6.0
+    image: mongo:8.0
     container_name: personapp-mongodb
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
@@ -52,12 +52,12 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/persona_db
       SPRING_DATASOURCE_USERNAME: ${DB_USER:-persona_db}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-persona_db}
-      SPRING_DATA_MONGODB_HOST: mongodb
-      SPRING_DATA_MONGODB_PORT: 27017
-      SPRING_DATA_MONGODB_DATABASE: persona_db
-      SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE: admin
-      SPRING_DATA_MONGODB_USERNAME: ${MONGO_USER:-persona_db}
-      SPRING_DATA_MONGODB_PASSWORD: ${MONGO_PASSWORD:-persona_db}
+      SPRING_MONGODB_HOST: mongodb
+      SPRING_MONGODB_PORT: 27017
+      SPRING_MONGODB_DATABASE: persona_db
+      SPRING_MONGODB_AUTHENTICATION_DATABASE: admin
+      SPRING_MONGODB_USERNAME: ${MONGO_USER:-persona_db}
+      SPRING_MONGODB_PASSWORD: ${MONGO_PASSWORD:-persona_db}
     depends_on: &database-dependencies
       mariadb:
         condition: service_healthy
@@ -83,3 +83,4 @@ services:
 volumes:
   mariadb_data:
   mongodb_data:
+    name: ${MONGO_VOLUME_NAME:-personapp_mongodb8_data}

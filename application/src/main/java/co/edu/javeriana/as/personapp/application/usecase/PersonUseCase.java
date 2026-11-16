@@ -42,6 +42,7 @@ public class PersonUseCase implements PersonInputPort {
 	public Person edit(Integer identification, Person person) throws NoExistException {
 		Person oldPerson = personPersintence.findById(identification);
 		if (oldPerson != null) {
+			// La llave de la ruta prevalece para actualizar el registro consultado.
 			person.setIdentification(identification);
 			return personPersintence.save(person);
 		}

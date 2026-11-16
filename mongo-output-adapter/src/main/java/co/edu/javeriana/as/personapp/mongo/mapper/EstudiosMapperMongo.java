@@ -54,6 +54,7 @@ public class EstudiosMapperMongo {
 
 	public Study fromAdapterToDomain(EstudiosDocument estudiosDocument) {
 		Study study = new Study();
+		// Las relaciones superficiales evitan volver a recorrer Persona -> Estudios -> Persona.
 		study.setPerson(personaMapperMongo.fromAdapterToDomainShallow(estudiosDocument.getPrimaryPersona()));
 		study.setProfession(profesionMapperMongo.fromAdapterToDomainShallow(estudiosDocument.getPrimaryProfesion()));
 		study.setGraduationDate(validateGraduationDate(estudiosDocument.getFecha()));

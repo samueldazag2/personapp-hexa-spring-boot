@@ -45,6 +45,7 @@ public class EstudiosMapperMaria {
 
 	public Study fromAdapterToDomain(EstudiosEntity estudiosEntity) {
 		Study study = new Study();
+		// Las relaciones superficiales evitan volver a recorrer Persona -> Estudios -> Persona.
 		study.setPerson(personaMapperMaria.fromAdapterToDomainShallow(estudiosEntity.getPersona()));
 		study.setProfession(profesionMapperMaria.fromAdapterToDomainShallow(estudiosEntity.getProfesion()));
 		if (estudiosEntity.getEstudiosPK() != null) {

@@ -1,0 +1,15 @@
+services:
+  mariadb:
+    container_name: personapp-lts-validacion-mariadb
+    ports: !override
+      - "13307:3306"
+  mongodb:
+    container_name: personapp-lts-validacion-mongodb
+    ports: !override
+      - "17017:27017"
+  rest:
+    ports: !override
+      - "13000:3000"
+volumes:
+  mongodb_data:
+    name: personapp-lts-validacion_mongodb8_data

@@ -12,11 +12,11 @@ de entrada; los adaptadores se conectan a él por medio de puertos.
 
 | | |
 |---|---|
-| Lenguaje | Java 11 (`maven.compiler.release=11`) |
-| Framework | Spring Boot 2.7.18 (Web, Data JPA, Data MongoDB) |
-| Bases de datos | MariaDB 10.11 y MongoDB 6.0 |
+| Lenguaje | Java 25 LTS (`maven.compiler.release=25`) |
+| Framework | Spring Boot 4.1.2 (Web, Data JPA, Data MongoDB) |
+| Bases de datos | MariaDB 10.11 y MongoDB 8.0 |
 | Entradas | REST (puerto 3000) y CLI |
-| Documentación API | Swagger 3 / OpenAPI (springdoc-openapi 1.7.0) |
+| Documentación API | Swagger 3 / OpenAPI (springdoc-openapi 3.2.0) |
 | Build | Maven multi-módulo |
 | Despliegue | Docker multi-stage + Docker Compose |
 
@@ -160,7 +160,7 @@ erDiagram
 
 ## Requisitos
 
-- JDK 11 o superior (se compila con `--release 11`; JDK 17 y 21 también sirven).
+- JDK 25 LTS y Maven 3.9.12 (mínimo del framework: Maven 3.6.3).
 - Maven 3.8 o superior.
 - Docker Desktop (Docker Engine + Compose v2).
 - Opcional: `curl` y el plugin de Lombok en el IDE (Eclipse/STS: ejecutar el jar de Lombok; IntelliJ:
@@ -206,7 +206,7 @@ docker compose ps                 # esperar (healthy) en los 3 servicios
 docker compose logs -f rest       # logs de la API
 ```
 
-- `Dockerfile.rest` y `Dockerfile.cli` son multi-stage: compilan con Maven (JDK 21, `release 11`) y
+- `Dockerfile.rest` y `Dockerfile.cli` son multi-stage: compilan con Maven (JDK 25, `release 25`) y
   ejecutan sobre `eclipse-temurin:11-jre`.
 - `docker-compose.yml` define healthchecks en mariadb, mongodb y rest, y `depends_on:
   condition: service_healthy` para que las aplicaciones arranquen solo con las bases listas.
@@ -437,7 +437,7 @@ personapp-hexa-spring-boot/
 ├── Dockerfile.rest, Dockerfile.cli, docker-compose.yml
 ├── .github/workflows/ci.yml
 ├── CONTRIBUTING.md
-└── pom.xml                  POM padre (Java 11, Spring Boot 2.7.18)
+└── pom.xml                  POM padre (Java 25 LTS, Spring Boot 4.1.2)
 ```
 
 ## Documentación adicional
@@ -448,3 +448,41 @@ personapp-hexa-spring-boot/
 - [docs/persona1/README.md](docs/persona1/README.md): núcleo y contratos de los puertos.
 - [docs/persona2/README.md](docs/persona2/README.md): persistencia y Docker.
 - [docs/fix-plantilla.md](docs/fix-plantilla.md): errores de la plantilla y sus correcciones.
+
+## Migración Java 25 / Spring Boot 4
+
+Se requiere JDK 25 LTS. Maven 3.9.12 fue usado en la validación. Spring Framework,
+Spring Data, MariaDB JDBC y Lombok se resuelven desde Spring Boot 4.1.2; springdoc
+usa el starter WebMVC 3.2.0. Los siete módulos y los contratos permanecen.
+
+```powershell
+mvn clean install
+mvn clean install "-Dpersistence.integration=true"
+```
+
+La conexión Mongo usa ahora `spring.mongodb.*` / `SPRING_MONGODB_*`.
+MongoDB 8.0 utiliza un volumen nuevo por defecto (`personapp_mongodb8_data`): no
+abrir un volumen MongoDB 6 con MongoDB 8 directamente. Para datos anteriores,
+planificar una migración respaldada siguiendo las rutas oficiales; esta tarea
+solo valida datos nuevos y no migra datos existentes.
+
+Validación aislada sin colisiones con el despliegue normal (Compose 2.24.4+):
+
+```powershell
+docker compose -p personapp-lts-validacion -f docker-compose.yml -f docker-compose.validacion.yml up -d --build mariadb mongodb rest
+docker compose -p personapp-lts-validacion -f docker-compose.yml -f docker-compose.validacion.yml run --rm cli
+$env:P2_MARIA_URL="jdbc:mariadb://localhost:13307/persona_db"
+$env:P2_MONGO_URI="mongodb://persona_db:persona_db@localhost:17017/persona_db?authSource=admin"
+mvn clean install "-Dpersistence.integration=true"
+```
+
+REST aislado: http://localhost:13000; Swagger: http://localhost:13000/swagger-ui/index.html;
+OpenAPI: http://localhost:13000/api-docs. Los puertos normales siguen siendo 3000,
+3307 y 27017. Los Dockerfiles construyen y ejecutan con Java 25 y ejecutan pruebas
+unitarias durante la construcción. Para detener la validación sin eliminar datos:
+`docker compose -p personapp-lts-validacion -f docker-compose.yml -f docker-compose.validacion.yml stop`.
+
+Véanse [trazabilidad](docs/CAMBIOS_RESPECTO_PLANTILLA.md),
+[trabajo local conservado](docs/COMPARACION_TRABAJO_LOCAL.md) e
+[informe de migración](docs/INFORME_MIGRACION_LTS.md). La documentación histórica de
+pruebas describe la versión anterior; la evidencia actual está en el informe.

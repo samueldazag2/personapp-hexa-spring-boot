@@ -17,7 +17,7 @@ import co.edu.javeriana.as.personapp.mongo.repository.*;
 
 @EnabledIfSystemProperty(named = "persistence.integration", matches = "true")
 @SpringBootTest(classes = PersistenceIntegrationTest.Config.class, properties = {
-    "logging.level.root=WARN", "spring.main.allow-circular-references=true", "spring.data.mongodb.uri=${P2_MONGO_URI:mongodb://persona_db:persona_db@localhost:27017/persona_db?authSource=admin}"
+    "logging.level.root=WARN", "spring.main.allow-circular-references=true", "spring.mongodb.uri=${P2_MONGO_URI:mongodb://persona_db:persona_db@localhost:27017/persona_db?authSource=admin}"
 })
 class PersistenceIntegrationTest {
     @Configuration

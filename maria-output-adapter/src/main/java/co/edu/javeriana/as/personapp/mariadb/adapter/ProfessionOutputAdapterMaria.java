@@ -12,7 +12,7 @@ import co.edu.javeriana.as.personapp.mariadb.mapper.ProfesionMapperMaria;
 import co.edu.javeriana.as.personapp.mariadb.repository.ProfesionRepositoryMaria;
 
 @Adapter("professionOutputAdapterMaria")
-@javax.transaction.Transactional
+@jakarta.transaction.Transactional
 public class ProfessionOutputAdapterMaria implements ProfessionOutputPort {
 
     @Autowired

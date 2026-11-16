@@ -12,7 +12,7 @@ import co.edu.javeriana.as.personapp.mariadb.repository.TelefonoRepositoryMaria;
 import co.edu.javeriana.as.personapp.mariadb.entity.TelefonoEntity;
 
 @Adapter("phoneOutputAdapterMaria")
-@javax.transaction.Transactional
+@jakarta.transaction.Transactional
 public class PhoneOutputAdapterMaria implements PhoneOutputPort {
     @Autowired
     private TelefonoRepositoryMaria repository;
