@@ -1,8 +1,10 @@
 # Cambios respecto a la plantilla
 
-Comparación Git realizada el 16 de noviembre de 2026. Plantilla del profesor: `b9bc9c824b8005f504163ca4cb67801c7b026df8` (`profesor/template`). Laboratorio integrado antes de esta tarea: `db07b58f49964945144804149cae50d1ae2d657a` (`origin/main`). La migración está sin commit en `feature/migracion-lts-documentacion`, en una copia independiente.
+Plantilla del profesor: `b9bc9c824b8005f504163ca4cb67801c7b026df8`. Laboratorio antes de migrar: `db07b58` (`v1.0`). Migración integrada: `6386e31` (`v2.0`, en `main`). Referencias comprobadas con Git el 16 de noviembre de 2026.
 
-El [inventario por archivo](INVENTARIO_PLANTILLA.tsv) contiene todos los archivos distintos, estado A/M, último commit y autor de ese commit. Ese autor no implica autoría exclusiva del archivo. La [comparación local](COMPARACION_TRABAJO_LOCAL.md) registra los 83 archivos preparados y la única diferencia no integrada. No se incorporaron cambios locales automáticamente.
+Las tablas distinguen correcciones de código original, funciones nuevas y migración. Los siete módulos, paquetes, anotaciones de `common` y estructuras de persistencia proceden de la plantilla; se conservaron salvo los cambios identificados abajo. El autor de un commit no implica autoría exclusiva del archivo.
+
+La plantilla incluía los siete módulos, `scripts/`, README, LICENSE, `.gitignore` y el POM raíz. El equipo añadió Docker, `.github/` para CI y revisión de PR, configuración de herramientas y `docs/` para trazabilidad y pruebas. `target/` y logs son artefactos generados e ignorados.
 
 En las tablas se abrevia la ruta Java desde `src/main/java/co/edu/javeriana/as/personapp/`; Maria y Mongo corresponden a sus módulos de salida, REST y CLI a sus módulos de entrada. Los nombres permiten localizar los archivos con `rg --files`.
 
@@ -34,26 +36,35 @@ En las tablas se abrevia la ruta Java desde `src/main/java/co/edu/javeriana/as/p
 | CLI: Phone/Profession/StudyInputAdapterCli, menús, EntityCrudMenu y CliInput | menú y CRUD | Solo Persona parcial | Operación por terminal | Adaptadores y menús de las cuatro entidades | Terminal delega a InputPort | Entrada CLI | SJVDC | db78c8a |
 | CLI: PersonaMenu.java, PersonaInputAdapterCli.java | opciones 7 y 8 | Sin consultas de relaciones | Teléfonos y estudios de Persona | Consultas adicionales y errores de duplicado | Reutiliza casos de uso | Entrada CLI | samueldazag2 | 2cc0ee3 |
 | REST: *ControllerV1, *InputAdapterRest, mappers, request/response y RestExceptionHandler | CRUD y errores | Persona parcial, otras entidades ausentes | API completa | Endpoints, DTO, HTTP 400/404/409 y selección de BD | Controller delega en adaptador, sin repositorios | Entrada REST | samueldazag2 | 3dc8827 |
-| application/src/test; adaptadores src/test | pruebas | Sin cobertura del CRUD completo | Regresión | JUnit/Mockito, mappers, MockMvc y pruebas reales de persistencia | Verifica capas y relaciones | Pruebas | Autores por archivo en inventario | c67338a; 648969e; 4959b9a; 6b30adb; 98c3e5f; cb999c8 |
+| application/src/test; adaptadores src/test | pruebas | Sin cobertura del CRUD completo | Regresión | JUnit/Mockito, mappers, MockMvc y pruebas reales de persistencia | Verifica capas y relaciones | Pruebas | samueldazag2; Sara Muñoz (persistencia) | c67338a; 648969e; 4959b9a; 6b30adb; 98c3e5f; cb999c8 |
 | Dockerfile.rest, Dockerfile.cli; docker-compose.yml | despliegue | Sin stack completo | Apps y dos bases | Construcción multietapa, healthchecks y scripts init | Despliegue reproducible | Infraestructura | Sara Muñoz (apps); samueldazag2 (Compose inicial) | 6b30adb; 542ffeb |
 | scripts/persona_dml_maria.sql, persona_dml_mongo.js | datos | Datos iniciales parciales | Relaciones de ejemplo | Datos coherentes para cuatro entidades | Facilita validación en dos motores | Infraestructura | samueldazag2 | a6c8a64 |
 
-## C — Cambios de esta tarea, sin commit
+## C — Migración tecnológica integrada en v2.0
 
-Responsable: sesión de migración asistida; no se atribuyen a integrantes ni se inventa un SHA.
+Los cambios de esta sección están en `6386e31`, cuyo autor Git es Sara Muñoz. La autoría del commit identifica su registro, sin atribuir exclusivamente a una persona todo el trabajo técnico.
 
 | Archivo | Bloque | Antes | Incompatibilidad | Cambio actual | Justificación | Componente | Responsable/commit |
 |---|---|---|---|---|---|---|---|
-| pom.xml | parent, propiedades, compiler | Java 11, Boot 2.7.18, Spring 5.3.31 y versiones manuales | Stack anterior a Jakarta/Java 25 | Java 25, parent Boot 4.1.2, gestión oficial y procesador Lombok explícito | Unifica dependencias/plugins; javac moderno requiere procesamiento explícito | Build | Esta tarea / sin commit |
-| POM de application, common, Maria, Mongo, REST y CLI | dependencias | Spring fijado; MariaDB 3.1.4; JAXB 2 en CLI | Conflictos entre generaciones | Elimina versiones gestionadas y JAXB sin uso; starters WebMVC y springdoc 3.2.0 | No hay llamadas JAXB en el código; Hibernate aporta Jakarta JAXB | Build | Esta tarea / sin commit |
+| pom.xml | parent, propiedades, compiler | Java 11, Boot 2.7.18, Spring 5.3.31 y versiones manuales | Stack anterior a Jakarta/Java 25 | Java 25, parent Boot 4.1.2, gestión oficial y procesador Lombok explícito | Unifica dependencias/plugins; javac moderno requiere procesamiento explícito | Build | Sara Muñoz / 6386e31 |
+| POM de application, common, Maria, Mongo, REST y CLI | dependencias | Spring fijado; MariaDB 3.1.4; JAXB 2 en CLI | Conflictos entre generaciones | Elimina versiones gestionadas y JAXB sin uso; starters WebMVC y springdoc 3.2.0 | No hay llamadas JAXB en el código; Hibernate aporta Jakarta JAXB | Build | Sara Muñoz / 6386e31 |
 | domain/pom.xml | revisión | Solo herencia | Ninguna modificación necesaria | Se conserva | Dominio no necesita Spring Data | Dominio | Revisado, sin cambio |
-| Maria: cinco entidades y cuatro adaptadores | imports y Transactional | javax.persistence/transaction | Hibernate usa Jakarta | jakarta.persistence/transaction | Mantiene tablas, llaves y transacciones | Persistencia | Esta tarea / sin commit |
-| Maria: PersistenceIntegrationTest.java | EntityScan | Paquete anterior | Boot 4 reubicó anotación | boot.persistence.autoconfigure.EntityScan | Conserva descubrimiento JPA | Prueba | Esta tarea / sin commit |
-| Mongo: PersistenceIntegrationTest.java; properties de REST/CLI; docker-compose.yml | conexión Mongo | spring.data.mongodb.* | Boot 4 renombró conexión | spring.mongodb.* y SPRING_MONGODB_* | Evita conectar silenciosamente a otra base | Configuración | Esta tarea / sin commit |
-| Dockerfile.rest, Dockerfile.cli; .github/workflows/ci.yml | build/runtime | Builder 21, JRE 11; CI 17 | No ejecutan bytecode Java 25 | Builder/JRE/CI 25 y plugin Boot 4.1.2 | Misma versión de compilación y ejecución | Infraestructura | Esta tarea / sin commit |
-| docker-compose.yml; docker-compose.validacion.yml | Mongo, aislamiento | Mongo 6.0 sin soporte | Base fuera de ciclo y colisiones con entorno local | Mongo 8.0 soportado; puertos/nombres/volumen nuevos para validar | No abre datos antiguos con otro motor | Infraestructura | Esta tarea / sin commit |
-| README.md; docs de esta tarea | versiones, evidencia | Instrucciones Java 11/Boot 2 | Instalación desactualizada | Versiones, comandos y resultados reales | Sustentación reproducible | Documentación | Esta tarea / sin commit |
-| PersonUseCase.java; EstudiosMapperMaria.java; EstudiosMapperMongo.java | edit y lectura de estudios | Código ya corregido | Razón poco evidente | Tres comentarios puntuales, sin cambiar lógica | Explica identidad y corte de recursión | Aplicación/mappers | Solo comentarios nuevos / sin commit |
+| Maria: cinco entidades y cuatro adaptadores | imports y Transactional | javax.persistence/transaction | Hibernate usa Jakarta | jakarta.persistence/transaction | Mantiene tablas, llaves y transacciones | Persistencia | Sara Muñoz / 6386e31 |
+| Maria: PersistenceIntegrationTest.java | EntityScan | Paquete anterior | Boot 4 reubicó anotación | boot.persistence.autoconfigure.EntityScan | Conserva descubrimiento JPA | Prueba | Sara Muñoz / 6386e31 |
+| Mongo: PersistenceIntegrationTest.java; properties de REST/CLI; docker-compose.yml | conexión Mongo | spring.data.mongodb.* | Boot 4 renombró conexión | spring.mongodb.* y SPRING_MONGODB_* | Evita conectar silenciosamente a otra base | Configuración | Sara Muñoz / 6386e31 |
+| Dockerfile.rest, Dockerfile.cli; .github/workflows/ci.yml | build/runtime | Builder 21, JRE 11; CI 17 | No ejecutan bytecode Java 25 | Builder/JRE/CI 25 y plugin Boot 4.1.2 | Misma versión de compilación y ejecución | Infraestructura | Sara Muñoz / 6386e31 |
+| docker-compose.yml; docker-compose.validacion.yml | Mongo, aislamiento | Mongo 6.0 sin soporte | Base fuera de ciclo y colisiones con entorno local | Mongo 8.0 soportado; puertos/nombres/volumen nuevos para validar | No abre datos antiguos con otro motor | Infraestructura | Sara Muñoz / 6386e31 |
+| README.md; documentación de migración | versiones, evidencia | Instrucciones Java 11/Boot 2 | Instalación desactualizada | Versiones, comandos y resultados reales | Sustentación reproducible | Documentación | Sara Muñoz / 6386e31 |
+| PersonUseCase.java; EstudiosMapperMaria.java; EstudiosMapperMongo.java | edit y lectura de estudios | Código ya corregido | Razón poco evidente | Tres comentarios puntuales, sin cambiar lógica | Explica identidad y corte de recursión | Aplicación/mappers | Solo comentarios / 6386e31 |
+
+## Decisiones de persistencia y compilación
+
+- `StudyOutputAdapterMaria.save` asigna padres gestionados dentro de una transacción; guardar el hijo no crea padres. `EstudiosMapperMaria` asigna PK y relaciones, ambas necesarias para JPA.
+- Las relaciones JPA de Persona/Profesión excluyen REMOVE y conservan PERSIST/MERGE (`6b30adb`). MariaDB protege los padres con FK y los adaptadores comprueban relaciones antes del borrado. Mongo verifica en código, sin atomicidad entre colecciones en standalone.
+- `StudyUseCase.edit` conserva los padres del registro existente; Phone y Profession fijan el ID solicitado (`42b32a8`). No se cambian contratos de puertos.
+- `java.sql.Date` usa `toLocalDate()`: `toInstant()` no está soportado. Mongo usa codecs Java Time UTC para evitar cambios de fecha según la zona de la JVM.
+- `flatten-maven-plugin` resuelve `${revision}` en los POM instalados y permite ejecutar un módulo tras `install` (`b6bbc2e`). `release` verifica APIs y bytecode de la misma versión Java.
+- Se conserva `Gender.OTHER` en el dominio; los mappers rechazan OTHER/null al escribir porque el esquema admite M/F. No se amplió el modelo persistido.
 
 ## Arquitectura y localización
 
